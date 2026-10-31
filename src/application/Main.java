@@ -1,3 +1,4 @@
+
 package application;
 
 import java.time.LocalDateTime;
@@ -67,24 +68,33 @@ public class Main {
 
     public void registrarEntrada() {
         String tipo = validarTipoVehiculo();
+        int celda = celdaDisponible();
+
+        if (celda == -1) {
+            System.out.println("El parqueadero esta lleno");
+            return;
+        }
+        if (!celdasVehiculo(tipo)) {
+            System.out.println("El parqueadero esta lleno para " + tipo);
+            return;
+        }
+
+        placa[celda] = validarDatos("Ingrese la placa del Vehiculo");
+        fechaIngreso[celda] = leerFechaHora("Ingrese la fecha y hora de ingreso");
+        tipoVehiculo[celda] = tipo;
+
+        celdasOcupadas++;
+        celdasLibres--;
+        System.out.println("El vehiculo quedo registrado en la celda " + (celda + 1));
+    }
+
+    public int celdaDisponible() {
         for (int i = 0; i < CAPACIDAD_TOTAL; i++) {
             if (tipoVehiculo[i] == null) {
-                if (celdasVehiculo(tipo)) {
-                    String placaVehiculo = validarDatos("Ingrese la placa del Vehiculo");
-                    placa[i] = placaVehiculo;
-
-                    fechaIngreso[i] = leerFechaHora("Ingrese la fecha y hora de ingreso");
-
-                    celdasOcupadas++;
-                    celdasLibres--;
-                    tipoVehiculo[i] = tipo;
-                    System.out.println("El vehiculo quedo registrado en la celda " + (i + 1));
-                } else {
-                    System.out.println("El parqueadero esta lleno para " + tipo);
-                }
-                break;
+                return i;
             }
         }
+        return -1;
     }
 
     public String validarTipoVehiculo() {
