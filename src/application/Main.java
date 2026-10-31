@@ -40,28 +40,26 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Bienvenido al sistema de parqueadero");
-        int opcion;
+        String opcion;
 
         do {
             System.out.println();
             System.out.println("===== MENU =====");
             System.out.println("1. Registrar entrada");
             System.out.println("0. Salir");
-            System.out.print("Elija una opcion: ");
-            opcion = SCANNER.nextInt();
-            SCANNER.nextLine();
+            opcion = app.validarDatos("Elija una opción", 1);
 
             switch (opcion) {
-                case 1:
+                case "1":
                     app.registrarEntrada();
                     break;
-                case 0:
+                case "0":
                     System.out.println("Hasta pronto");
                     break;
                 default:
                     System.out.println("Opcion invalida");
             }
-        } while (opcion != 0);
+        } while (!opcion.equals("0"));
 
         SCANNER.close();
     }
@@ -79,7 +77,7 @@ public class Main {
             return;
         }
 
-        placa[celda] = validarDatos("Ingrese la placa del Vehiculo");
+        placa[celda] = validarDatos("Ingrese la placa del Vehiculo", 2);
         fechaIngreso[celda] = leerFechaHora("Ingrese la fecha y hora de ingreso");
         tipoVehiculo[celda] = tipo;
 
@@ -111,12 +109,15 @@ public class Main {
         }
     }
 
-    public String validarDatos(String mensaje){
+    public String validarDatos(String mensaje, int tipo){
         while(true){
             System.out.print(mensaje + ": ");
             String dato = SCANNER.nextLine().trim();
+
             if(dato.isEmpty()){
-                System.out.println("Ingrese una placa valida");
+                System.out.println("Error: Vuelva a ingresar el dato solicitado");
+            }else if(tipo == 1 && !dato.matches("\\d{1,9}")){
+                System.out.println("Error: Solo se permiten numeros");
             }else{
                 return dato;
             }
