@@ -1,4 +1,3 @@
-
 package application;
 
 import java.time.LocalDateTime;
@@ -46,12 +45,16 @@ public class Main {
             System.out.println();
             System.out.println("===== MENU =====");
             System.out.println("1. Registrar entrada");
+            System.out.println("2. Registrar Salida");
             System.out.println("0. Salir");
             opcion = app.validarDatos("Elija una opción", 1);
 
             switch (opcion) {
                 case "1":
                     app.registrarEntrada();
+                    break;
+                case "2":
+                    app.registrarSalida();
                     break;
                 case "0":
                     System.out.println("Hasta pronto");
@@ -84,6 +87,75 @@ public class Main {
         celdasOcupadas++;
         celdasLibres--;
         System.out.println("El vehiculo quedo registrado en la celda " + (celda + 1));
+    }
+
+
+    public void registrarSalida() {
+        int indice = buscarCeldaOcupada();
+        if (indice == -1) {
+            return;
+        }
+
+        String tipo = tipoVehiculo[indice];
+        System.out.println("Vehiculo encontrado en la celda " + (indice + 1) + " tipo: " + tipo);
+
+        LocalDateTime salida;
+        while (true) {
+            salida = leerFechaHora("Ingrese la fecha y hora de salida");
+
+            if (!salida.isBefore(fechaIngreso[indice])) {
+                break;
+            }
+            System.out.println("Error: la salida no puede ser anterior al ingreso ("
+                    + fechaIngreso[indice].format(formateador) + ")");
+        }
+
+        long valor = liquidar(indice, salida, tipo);
+
+        if (tipo.equals("carro")) {
+            recaudoCarros += valor;
+        } else {
+            recaudoMotos += valor;
+        }
+        recaudoTotal += valor;
+
+        tipoVehiculo[indice] = null;
+        fechaIngreso[indice] = null;
+        placa[indice] = null;
+        celdasOcupadas--;
+        celdasLibres++;
+
+        System.out.println("Salida registrada");
+    }
+
+
+    public long liquidar(int indice, LocalDateTime salida, String tipo){
+        return 0;
+    }
+
+    public int buscarCeldaOcupada() {
+        String dato = validarDatos("Ingrese el numero de la celda o la placa del vehiculo", 2);
+
+        if (dato.matches("\\d{1,9}")) {
+            int celda = Integer.parseInt(dato);
+            if (celda < 1 || celda > CAPACIDAD_TOTAL) {
+                System.out.println("Celda fuera de rango (1 a " + CAPACIDAD_TOTAL + ")");
+                return -1;
+            }
+            if (tipoVehiculo[celda - 1] == null) {
+                System.out.println("La celda " + celda + " esta libre");
+                return -1;
+            }
+            return celda - 1;
+        }
+
+        for (int i = 0; i < CAPACIDAD_TOTAL; i++) {
+            if (placa[i] != null && placa[i].equalsIgnoreCase(dato)) {
+                return i;
+            }
+        }
+        System.out.println("Placa no encontrada");
+        return -1;
     }
 
     public int celdaDisponible() {
