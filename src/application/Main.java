@@ -2,7 +2,9 @@ package application;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
+import java.time.Duration;
 
 public class Main {
 
@@ -124,13 +126,58 @@ public class Main {
         placa[indice] = null;
         celdasOcupadas--;
         celdasLibres++;
-
-        System.out.println("Salida registrada");
     }
 
 
+    public long contarDiasCompletos(LocalDateTime ingreso, LocalDateTime salida) {
+        return ChronoUnit.DAYS.between(ingreso, salida);
+    }
+
+    public long calcularHorasRestantes(LocalDateTime cursor, LocalDateTime salida) {
+        long minutosRestantes = Duration.between(cursor, salida).toMinutes();
+        return (minutosRestantes + 59) / 60;
+    }
+
     public long liquidar(int indice, LocalDateTime salida, String tipo){
-        return 0;
+        LocalDateTime ingreso = fechaIngreso[indice];
+
+        diasACobrar = contarDiasCompletos(ingreso, salida);
+        LocalDateTime cursor = ingreso.plusDays(diasACobrar);
+        horasACobrar = calcularHorasRestantes(cursor, salida);
+
+        if (horasACobrar >= UMBRAL_HORAS_DIA) {
+            diasACobrar++;
+            horasACobrar = 0;
+        }
+
+        int tarifaDia;
+        int tarifaHora;
+        if (tipo.equals("moto")) {
+            tarifaDia = TARIFA_DIA_MOTO;
+            tarifaHora = TARIFA_HORA_MOTO;
+        } else {
+            tarifaDia = TARIFA_DIA_CARRO;
+            tarifaHora = TARIFA_HORA_CARRO;
+        }
+
+        valorLiquidado = diasACobrar * tarifaDia + horasACobrar * tarifaHora;
+
+        System.out.println();
+        System.out.println("===== FACTURA =====");
+        System.out.println("Celda: " + (indice + 1));
+        System.out.println("Placa: " + placa[indice]);
+        System.out.println("Tipo: " + tipo);
+        System.out.println("Ingreso: " + ingreso.format(formateador));
+        System.out.println("Salida: " + salida.format(formateador));
+        if (diasACobrar > 0) {
+            System.out.println(diasACobrar + " dia(s) x $" + tarifaDia + " = $" + (diasACobrar * tarifaDia));
+        }
+        if (horasACobrar > 0) {
+            System.out.println(horasACobrar + " hora(s) x $" + tarifaHora + " = $" + (horasACobrar * tarifaHora));
+        }
+        System.out.println("TOTAL A PAGAR: $" + valorLiquidado);
+
+        return valorLiquidado;
     }
 
     public int buscarCeldaOcupada() {
