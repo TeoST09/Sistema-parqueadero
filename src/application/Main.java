@@ -48,6 +48,8 @@ public class Main {
             System.out.println("===== MENU =====");
             System.out.println("1. Registrar entrada");
             System.out.println("2. Registrar Salida");
+            System.out.println("3. Reporte de ocupacion");
+            System.out.println("4. Reporte financiero");
             System.out.println("0. Salir");
             opcion = app.validarDatos("Elija una opción", 1);
 
@@ -57,6 +59,12 @@ public class Main {
                     break;
                 case "2":
                     app.registrarSalida();
+                    break;
+                case "3":
+                    app.reporteOcupacion();
+                    break;
+                case "4":
+                    app.reporteFinanciero();
                     break;
                 case "0":
                     System.out.println("Hasta pronto");
@@ -178,6 +186,21 @@ public class Main {
         System.out.println("TOTAL A PAGAR: $" + valorLiquidado);
 
         return valorLiquidado;
+    }
+
+    public void reporteOcupacion() {
+        System.out.println();
+        System.out.println("===== REPORTE DE OCUPACION =====");
+        System.out.println("Celdas ocupadas: " + celdasOcupadas);
+        System.out.println("Celdas libres: " + celdasLibres);
+    }
+
+    public void reporteFinanciero() {
+        System.out.println();
+        System.out.println("===== REPORTE FINANCIERO =====");
+        System.out.println("Recaudo carros: $" + recaudoCarros);
+        System.out.println("Recaudo motos: $" + recaudoMotos);
+        System.out.println("Recaudo total: $" + recaudoTotal);
     }
 
     public int buscarCeldaOcupada() {
